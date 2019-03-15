@@ -11,10 +11,6 @@ class Modal extends Component {
     );
   }
 
-  componentDidUpdate() {
-    console.log('It did');
-  }
-
   render() {
     return (
       <React.Fragment>
