@@ -13,7 +13,7 @@ const INGREDIENT_PRICES = {
   salad: 0.6,
   bacon: 0.5,
   cheese: 0.8,
-  meat: 0.9
+  meat: 0.9,
 };
 
 class BurgerBuilder extends Component {
@@ -23,7 +23,7 @@ class BurgerBuilder extends Component {
     purchasable: false,
     purchasing: false,
     loading: false,
-    error: false
+    error: false,
   };
 
   componentDidMount() {
@@ -37,15 +37,10 @@ class BurgerBuilder extends Component {
       });
   }
 
-  updatePurchaseState(ingredients) {
-    const sum = Object.values(ingredients).reduce((acc, el) => acc + el);
-
-    this.setState({ purchasable: sum > 0 });
-  }
-
-  updateIngredientHandler = (type, operation, e) => {
-    let ingredients = { ...this.state.ingredients };
-    let totalPrice = this.state.totalPrice;
+  updateIngredientHandler = (type, operation) => {
+    // eslint-disable-next-line react/no-access-state-in-setstate
+    const ingredients = { ...this.state.ingredients };
+    let { totalPrice } = this.state;
 
     if (operation === 'add') {
       ingredients[type] += 1;
@@ -70,21 +65,29 @@ class BurgerBuilder extends Component {
 
   purchaseContinueHandler = () => {
     const queryParams = [];
-    for (let key in this.state.ingredients) {
+    // eslint-disable-next-line no-restricted-syntax
+    for (const key in this.state.ingredients) {
       queryParams.push(
-        encodeURIComponent(key) +
-          '=' +
-          encodeURIComponent(this.state.ingredients[key])
+        `${encodeURIComponent(key)}=${encodeURIComponent(
+          this.state.ingredients[key]
+        )}`
       );
     }
-    queryParams.push('price=' + this.state.totalPrice);
+    queryParams.push(`price=${this.state.totalPrice}`);
     const queryString = queryParams.join('&');
 
     this.props.history.push({
       pathname: '/checkout',
-      search: '?' + queryString
+      search: `?${queryString}`,
     });
+    console.log(this.props);
   };
+
+  updatePurchaseState(ingredients) {
+    const sum = Object.values(ingredients).reduce((acc, el) => acc + el);
+
+    this.setState({ purchasable: sum > 0 });
+  }
 
   render() {
     let orderSummary = null;
